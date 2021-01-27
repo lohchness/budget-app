@@ -81,10 +81,11 @@ def create_spend_chart(categories):
   total_spent = 0
 
   for i in categories:
+    total_spent = 0
     for item in i.ledger: # Each item from each category
       if item['amount'] < 0:
        total_spent -= item['amount']
-      amount_spent.append(round(total_spent, 2))
+    amount_spent.append(round(total_spent, 2)) # <-- reason why graph circles were wrong, did not indent in the correct place
   # All values are now in the amount_spent list
 
   for amount in amount_spent:
@@ -103,25 +104,28 @@ def create_spend_chart(categories):
 
   i = 100 # Y-Axis - Count down 100 to 0 with increments of 10 
   while i >= 0:
-    chart += str(i).rjust(3) + "|"
+    chart += str(i).rjust(3) + "| "
     for j in spent_percent:
       if j >= i:
-        chart += " o "
+        chart += "o"
       else:
-        chart += "   "
+        chart += " "
+      chart += "  "
     chart += "\n"
     i -= 10
-    # Chart is adding the o's 90 degrees CCW for some reason????
+    # FIXED - Chart is adding the o's 90 degrees CCW for some reason????
       # Will check code above to see if it is wrong with the way I am adding the values to the list
 
-  chart += "    " + ("---"*len(categories)) + "-\n"
+  chart += "    "
+  chart += "---"*len(categories)
+  chart += "-\n     "
   # End graph circles
 
   # Names on the chart
   cat_names = []
 
   for category in categories:
-    cat_names.append(str(category.name)) # Adds all categories into list
+    cat_names.append(str(category.name)) # Puts cats into list
 
   longest_name = 0
   #longest_name = max(cat_names, key=len)
@@ -129,17 +133,20 @@ def create_spend_chart(categories):
   for name in cat_names:
     if len(name) > longest_name:
       longest_name = len(name)
+      # Checks through the names, updates when it encounters a name longer than the current name
+  
 
 
   # Need length of longest name to test adding the names to the X-Axis
   
-  for i in range(longest_name):
-    for j in cat_names:
-      if len(j) > i:
-        chart += f" {j[i]} "
+  for x in range(longest_name):
+    for y in cat_names:
+      if len(y) > x:
+        chart += y[x]
+        chart += "  "
       else:
         chart += "   "
-    if i < longest_name - 1:
-      chart += "\n    "
+    if x < longest_name - 1:
+      chart += "\n     "
   
   return chart
